@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lease Form</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>Lease Information</h2>
+    <form id="leaseForm">
+        <label>
+            <input type="checkbox" id="newLeaseCheckbox"> New Lease
+        </label>
+        <br>
+        <label>
+            <input type="checkbox" id="renewalLeaseCheckbox"> Renewal Lease
+        </label>
+        <br>
+
+        <!-- Fields for New Lease -->
+        <div id="newLeaseFields" class="hidden">
+            <h3>New Lease Fields</h3>
+            <!-- Additional Fields -->
+            <label>Property Code: <input type="text" name="N_PropertyCode" id="N_PropertyCode"></label><br>
+            <label>Unit: <input type="text" name="N_Unit" id="N_Unit"></label><br>
+            <label>Tenants: <input type="text" name="N_Tenants" id="N_Tenants"></label><br>
+
+            <!-- Existing Fields -->
+            <label>Security Deposit: <input type="text" name="N_SD" id="N_SD"></label><br>
+            <label>Monthly Rent: <input type="text" name="N_MonthlyRent" id="N_MonthlyRent"></label><br>
+
+            <!-- Additional Field: Monthly RUBS -->
+            <label>Monthly RUBS: <input type="number" step="0.01" name="N_MonthlyRUBS" id="N_MonthlyRUBS"></label><br>
+
+            <!-- Existing Fields -->
+            <label>Pet Rent: <input type="text" name="N_PetRent" id="N_PetRent"></label><br>
+
+            <!-- Additional Field: Pet Non Refundable Fee -->
+            <label>Pet Non Refundable Fee: <input type="number" step="0.01" name="N_PetNonRefundableFee" id="N_PetNonRefundableFee"></label><br>
+
+            <!-- Additional Field: Move In Date -->
+            <label>Move In Date: <input type="date" name="N_MoveInDate" id="N_MoveInDate"></label><br>
+
+            <!-- Existing Fields -->
+            <label>Lease Start Date: <input type="date" name="N_LeaseStartDate" id="N_LeaseStartDate"></label><br>
+            <label>Lease End Date: <input type="date" name="N_LeaseEndDate" id="N_LeaseEndDate"></label><br>
+        </div>
+
+        <!-- Fields for Renewal Lease -->
+        <div id="renewalLeaseFields" class="hidden">
+            <h3>Renewal Lease Fields</h3>
+            <label>Current Rent: <input type="text" name="R_CurrentRent" id="R_CurrentRent"></label><br>
+            <label>New Rent: <input type="text" name="R_NewRent" id="R_NewRent"></label><br>
+            <label>Renewal Term (Months): <input type="text" name="R_RenewalTerm" id="R_RenewalTerm"></label><br>
+            <label>Rent Increase: <input type="text" name="R_RentIncrease" id="R_RentIncrease"></label><br>
+            <label>Renewal Lease Start Date: <input type="date" name="R_RenewalStartDate" id="R_RenewalStartDate"></label><br>
+            <label>Renewal Lease End Date: <input type="date" name="R_RenewalEndDate" id="R_RenewalEndDate"></label><br>
+        </div>
+
+    </form>
+
+    <script>
+        // Get the checkboxes
+        var newLeaseCheckbox = document.getElementById("newLeaseCheckbox");
+        var renewalLeaseCheckbox = document.getElementById("renewalLeaseCheckbox");
+
+        // Get the field sections
+        var newLeaseFields = document.getElementById("newLeaseFields");
+        var renewalLeaseFields = document.getElementById("renewalLeaseFields");
+
+        // Add event listeners to checkboxes
+        newLeaseCheckbox.addEventListener("change", function() {
+            if (newLeaseCheckbox.checked) {
+                newLeaseFields.classList.remove("hidden");
+                renewalLeaseFields.classList.add("hidden");
+                renewalLeaseCheckbox.checked = false;
+            } else {
+                newLeaseFields.classList.add("hidden");
+            }
+        });
+
+        renewalLeaseCheckbox.addEventListener("change", function() {
+            if (renewalLeaseCheckbox.checked) {
+                renewalLeaseFields.classList.remove("hidden");
+                newLeaseFields.classList.add("hidden");
+                newLeaseCheckbox.checked = false;
+            } else {
+                renewalLeaseFields.classList.add("hidden");
+            }
+        });
+
+        // Automatically download the PDF after the last field is filled
+        var lastNewLeaseField = document.getElementById("N_LeaseEndDate");
+        var lastRenewalLeaseField = document.getElementById("R_RenewalEndDate");
+
+        lastNewLeaseField.addEventListener("change", function() {
+            if (newLeaseCheckbox.checked) {
+                downloadPDF();
+            }
+        });
+
+        lastRenewalLeaseField.addEventListener("change", function() {
+            if (renewalLeaseCheckbox.checked) {
+                downloadPDF();
+            }
+        });
+
+        // Function to download the form data as a PDF
+        function downloadPDF() {
+            // Initialize jsPDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Add content based on which checkbox is checked
+            if (newLeaseCheckbox.checked) {
+                doc.text("New Lease Form", 10, 10);
+                doc.text("Property Code: " + document.getElementById("N_PropertyCode").value, 10, 20);
+                doc.text("Unit: " + document.getElementById("N_Unit").value, 10, 30);
+                doc.text("Tenants: " + document.getElementById("N_Tenants").value, 10, 40);
+                doc.text("Security Deposit: " + document.getElementById("N_SD").value, 10, 50);
+                doc.text("Monthly Rent: " + document.getElementById("N_MonthlyRent").value, 10, 60);
+                doc.text("Monthly RUBS: " + document.getElementById("N_MonthlyRUBS").value, 10, 70);
+                doc.text("Pet Rent: " + document.getElementById("N_PetRent").value, 10, 80);
+                doc.text("Pet Non Refundable Fee: " + document.getElementById("N_PetNonRefundableFee").value, 10, 90);
+                doc.text("Move In Date: " + document.getElementById("N_MoveInDate").value, 10, 100);
+                doc.text("Lease Start Date: " + document.getElementById("N_LeaseStartDate").value, 10, 110);
+                doc.text("Lease End Date: " + document.getElementById("N_LeaseEndDate").value, 10, 120);
+            }
+
+            if (renewalLeaseCheckbox.checked) {
+                doc.text("Renewal Lease Form", 10, 10);
+                doc.text("Current Rent: " + document.getElementById("R_CurrentRent").value, 10, 20);
+                doc.text("New Rent: " + document.getElementById("R_NewRent").value, 10, 30);
+                doc.text("Renewal Term (Months): " + document.getElementById("R_RenewalTerm").value, 10, 40);
+                doc.text("Rent Increase: " + document.getElementById("R_RentIncrease").value, 10, 50);
+                doc.text("Renewal Lease Start Date: " + document.getElementById("R_RenewalStartDate").value, 10, 60);
+                doc.text("Renewal Lease End Date: " + document.getElementById("R_RenewalEndDate").value, 10, 70);
+            }
+
+            // Save the PDF
+            doc.save("lease_form.pdf");
+        }
+    </script>
+</body>
+</html>
